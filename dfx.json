@@ -1,7 +1,7 @@
 {
   "canisters": {
     "veriflair_backend": {
-      "candid": "src/veriflair_backend/veriflair_backend.did",
+      "candid": "veriflair_backend.did",
       "package": "veriflair_backend",
       "type": "rust"
     },
@@ -13,7 +13,15 @@
     },
 
     "veriflair_frontend": {
-
+        "frontend": {
+        "entrypoint": "frontend/dist/index.html" 
+      },
+      "source": ["frontend/dist"], 
+      "type": "assets", 
+      "dependencies": [ 
+        "veriflair_backend",
+        "veriflair_nft"
+      ]
     }
   },
   "defaults": {
