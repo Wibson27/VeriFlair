@@ -1,5 +1,6 @@
 [workspace]
 members = [
     "src/veriflair_backend"
+    "../nft"
 ]
 resolver = "2"
