@@ -1,9 +1,19 @@
 {
   "canisters": {
-    "backend_backend": {
-      "candid": "src/backend_backend/backend_backend.did",
-      "package": "backend_backend",
+    "veriflair_backend": {
+      "candid": "src/veriflair_backend/veriflair_backend.did",
+      "package": "veriflair_backend",
       "type": "rust"
+    },
+
+    "veriflair_nft": {
+      "candid": "nft/veriflair_nft.did",
+      "package": "veriflair_nft",
+      "type": "rust"
+    },
+
+    "veriflair_frontend": {
+
     }
   },
   "defaults": {
