@@ -1,5 +1,5 @@
 [workspace]
 members = [
-    "src/backend_backend"
+    "src/veriflair_backend"
 ]
 resolver = "2"
