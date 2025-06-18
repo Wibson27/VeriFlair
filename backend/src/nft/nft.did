@@ -1,0 +1,17 @@
+type TokenMetadata = record {
+  token_id : nat64;
+  owner : principal;
+  badge_id : text;
+  badge_name : text;
+  description : text;
+  image_url : opt text;
+  earned_at : nat64;
+};
+
+service : {
+  mint : (principal, text) -> (nat64);
+  get_token_metadata : (nat64) -> (opt TokenMetadata) query;
+  get_tokens_of_owner : (principal) -> (vec nat64) query;
+  transfer : (principal, nat64) -> (variant { Ok : null; Err : text });
+  get_total_supply : () -> (nat64) query;
+}

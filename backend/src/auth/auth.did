@@ -5,18 +5,18 @@ type UserRole = variant {
 };
 
 type UserSession = record {
-  principal: principal;
-  github_username: opt text;
-  created_at: nat64;
-  last_active: nat64;
-  role: UserRole;
-  is_verified: bool;
+  user_principal : principal;
+  github_username : opt text;
+  created_at : nat64;
+  last_active : nat64;
+  role : UserRole;
+  is_verified : bool;
 };
 
 service : {
-  create_session: (opt text) -> (variant { Ok: UserSession; Err: text });
-  update_last_active: () -> (variant { Ok; Err: text });
-  get_session: () -> (opt UserSession) query;
-  is_authenticated: () -> (bool) query;
-  set_user_role: (principal, UserRole) -> (variant { Ok; Err: text });
+  create_session : (opt text) -> (variant { Ok : UserSession; Err : text });
+  update_last_active : () -> (variant { Ok : null; Err : text });
+  get_session : () -> (opt UserSession) query;
+  is_authenticated : () -> (bool) query;
+  set_user_role : (principal, UserRole) -> (variant { Ok : null; Err : text });
 }

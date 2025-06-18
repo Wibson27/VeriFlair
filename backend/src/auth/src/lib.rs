@@ -2,7 +2,8 @@ use candid::{CandidType, Principal};
 use ic_cdk::api::time;
 use ic_cdk::{init, post_upgrade, pre_upgrade, query, update};
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
-use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
+use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap, Storable};
+use std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 
@@ -26,6 +27,22 @@ pub enum UserRole {
     User,
     Admin,
     Moderator,
+}
+
+// Correct Storable implementation for ic-stable-structures 0.6
+impl Storable for UserSession {
+    fn to_bytes(&self) -> Cow<[u8]> {
+        Cow::Owned(candid::encode_one(self).unwrap())
+    }
+
+    fn from_bytes(bytes: Cow<[u8]>) -> Self {
+        candid::decode_one(&bytes).unwrap()
+    }
+
+    const BOUND: ic_stable_structures::storable::Bound = ic_stable_structures::storable::Bound::Bounded {
+        max_size: 512,
+        is_fixed_size: false,
+    };
 }
 
 thread_local! {
