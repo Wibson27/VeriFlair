@@ -15,10 +15,6 @@
       "type": "rust",
       "candid": "src/nft/nft.did",
       "package": "nft"
-    },
-    "internet_identity": {
-      "type": "pull",
-      "id": "rdmx6-jaaaa-aaaah-qdrqq-cai"
     }
   },
   "defaults": {
