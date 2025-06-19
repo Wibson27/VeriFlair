@@ -8,3 +8,16 @@ module.exports = {
   },
   plugins: [],
 }
+
+// tailwind.config.js
+export default {
+  theme: {
+    extend: {
+      fontFamily: {
+        sfpro: ['SF Pro Display', 'Inter', 'sans-serif'],
+      },
+    },
+  },
+  // ...
+}
+

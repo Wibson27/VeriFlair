@@ -1,23 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import TopSection from "./components/TopSection";
+import UpperSection from "./components/UpperSection";
+import LowerSection from "./components/LowerSection";
+import BottomSection from "./components/BottomSection";
+
+// function App() {
+//   return (
+//     <div className="text-white font-sans">
+//       <TopSection/>
+//       <UpperSection/>
+//       <LowerSection/>
+//       <BottomSection/>
+//     </div>
+//   );
+// }
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth">
+      <div className="min-h-screen snap-start">
+        <TopSection />
+      </div>
+      <div className="min-h-screen snap-start">
+        <UpperSection />
+      </div>
+      <div className="min-h-screen snap-start">
+        <LowerSection />
+      </div>
+      <div className="min-h-screen snap-start">
+        <BottomSection />
+      </div>
     </div>
   );
 }
