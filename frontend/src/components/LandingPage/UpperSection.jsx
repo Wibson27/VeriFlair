@@ -1,9 +1,9 @@
-import frameText from '../assets/image/fontupper.png';
-import card1 from '../assets/image/card1.png';
-import card2 from '../assets/image/card2.png';
-import card3 from '../assets/image/card3.png';
-import card4 from '../assets/image/card4.png';
-import card5 from '../assets/image/card5.png';
+import frameText from '../../assets/image/LandingPage/fontupper.png';
+import card1 from '../../assets/image/LandingPage/card1.png';
+import card2 from '../../assets/image/LandingPage/card2.png';
+import card3 from '../../assets/image/LandingPage/card3.png';
+import card4 from '../../assets/image/LandingPage/card4.png';
+import card5 from '../../assets/image/LandingPage/card5.png';
 
 export default function UpperSection() {
   return (

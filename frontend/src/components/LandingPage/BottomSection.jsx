@@ -1,5 +1,5 @@
-import blueBg from '../assets/image/bgbottom.png';   // ukuran: 1440x1204
-import blackBg from '../assets/image/bgblack.png'; // ukuran: 1440x348
+import blueBg from '../../assets/image/LandingPage/bgbottom.png';   // ukuran: 1440x1204
+import blackBg from '../../assets/image/LandingPage/bgblack.png'; // ukuran: 1440x348
 
 export default function BottomSection() {
   return (
