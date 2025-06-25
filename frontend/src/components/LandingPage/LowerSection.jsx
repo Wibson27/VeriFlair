@@ -1,6 +1,6 @@
-import bgImage from '../assets/image/bglower.png';
-import frameText from '../assets/image/fontlower.png';
-import nftImage from '../assets/image/nft.png';
+import bgImage from '../../assets/image/LandingPage/bglower.png';
+import frameText from '../../assets/image/LandingPage/fontlower.png';
+import nftImage from '../../assets/image/LandingPage/nft.png';
 
 export default function LowerSection() {
   return (
