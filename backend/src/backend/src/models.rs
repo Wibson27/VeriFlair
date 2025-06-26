@@ -56,7 +56,7 @@ pub struct BadgeAttribute {
 pub struct GitHubAnalysis {
     pub username: String,
     pub total_commits: u32,
-    pub languages: HashMap<String, u32>, // Language -> lines of code
+    pub languages: HashMap<String, u32>, 
     pub repositories: Vec<Repository>,
     pub llm_insights: LLMAnalysis,
     pub analyzed_at: u64,
@@ -82,7 +82,7 @@ pub struct LLMAnalysis {
     pub analysis_summary: String,
 }
 
-// These are for handling HTTP requests and responses
+// Ini untuk handling HTTP requests and responses
 #[derive(CandidType, Deserialize)]
 pub struct HttpRequest {
     pub method: String,
@@ -102,4 +102,15 @@ pub struct HttpResponse {
 pub struct HttpHeader {
     pub name: String,
     pub value: String,
+}
+
+#[derive(CandidType, serde::Deserialize, Clone, Debug)]
+pub struct GitHubUser {
+    pub login: String,
+    pub name: Option<String>,
+    pub bio: Option<String>,
+    pub public_repos: u32,
+    pub followers: u32,
+    pub following: u32,
+    pub created_at: String,
 }
