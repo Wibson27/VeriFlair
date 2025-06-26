@@ -1,0 +1,16 @@
+type Repository = record {
+  name: text;
+  description: opt text;
+  language: opt text;
+  stars: nat32;
+  forks: nat32;
+  commits: nat32;
+  is_fork: bool;
+};
+
+service : {
+  "get_user_repositories_test": (text) -> (variant {
+    Ok: vec Repository;
+    Err: text;
+  });
+}

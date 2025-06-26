@@ -1,0 +1,105 @@
+use candid::{CandidType, Principal};
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
+pub struct UserProfile {
+    pub principal: Principal,
+    pub github_username: String,
+    pub badges: Vec<Badge>,
+    pub reputation_score: u32,
+    pub last_analysis: Option<u64>,
+    pub created_at: u64,
+    pub updated_at: u64,
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
+pub struct Badge {
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub category: BadgeCategory,
+    pub tier: BadgeTier,
+    pub earned_at: u64,
+    pub metadata: BadgeMetadata,
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
+pub enum BadgeCategory {
+    Language(String),
+    Contribution(String),
+    Achievement(String),
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
+pub enum BadgeTier {
+    Bronze,
+    Silver,
+    Gold,
+    Platinum,
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
+pub struct BadgeMetadata {
+    pub image_url: String,
+    pub animation_url: Option<String>,
+    pub attributes: Vec<BadgeAttribute>,
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
+pub struct BadgeAttribute {
+    pub trait_type: String,
+    pub value: String,
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
+pub struct GitHubAnalysis {
+    pub username: String,
+    pub total_commits: u32,
+    pub languages: HashMap<String, u32>, // Language -> lines of code
+    pub repositories: Vec<Repository>,
+    pub llm_insights: LLMAnalysis,
+    pub analyzed_at: u64,
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
+pub struct Repository {
+    pub name: String,
+    pub description: Option<String>,
+    pub language: Option<String>,
+    pub stars: u32,
+    pub forks: u32,
+    pub commits: u32,
+    pub is_fork: bool,
+}
+
+#[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
+pub struct LLMAnalysis {
+    pub code_quality_score: f32,
+    pub contribution_type: String,
+    pub expertise_areas: Vec<String>,
+    pub recommended_badges: Vec<String>,
+    pub analysis_summary: String,
+}
+
+// These are for handling HTTP requests and responses
+#[derive(CandidType, Deserialize)]
+pub struct HttpRequest {
+    pub method: String,
+    pub url: String,
+    pub headers: Vec<(String, String)>,
+    pub body: Vec<u8>,
+}
+
+#[derive(CandidType, Serialize)]
+pub struct HttpResponse {
+    pub status_code: u16,
+    pub headers: Vec<HttpHeader>,
+    pub body: Vec<u8>,
+}
+
+#[derive(CandidType, Serialize)]
+pub struct HttpHeader {
+    pub name: String,
+    pub value: String,
+}
