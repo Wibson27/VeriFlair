@@ -9,7 +9,8 @@
     "backend": {
       "type": "rust",
       "candid": "candid/backend.did",
-      "package": "backend"
+      "package": "backend",
+      "build": "cargo build --target wasm32-unknown-unknown --release -p backend && candid-extractor target/wasm32-unknown-unknown/release/backend.wasm > candid/backend.did"
     },
     "nft": {
       "type": "rust",

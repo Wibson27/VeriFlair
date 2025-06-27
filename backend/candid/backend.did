@@ -4,7 +4,6 @@ type Repository = record {
   language: opt text;
   stars: nat32;
   forks: nat32;
-  commits: nat32;
   is_fork: bool;
 };
 
@@ -31,6 +30,7 @@ type TransformArgs = record {
 };
 
 service : {
+  // Kembali ke dua fungsi terpisah
   "get_user_repositories_test": (text) -> (variant {
     Ok: vec Repository;
     Err: text;
@@ -39,6 +39,5 @@ service : {
     Ok: GitHubUser;
     Err: text;
   });
-  // Menambahkan fungsi transform ke API publik
   "transform": (TransformArgs) -> (CanisterHttpResponsePayload) query;
 }

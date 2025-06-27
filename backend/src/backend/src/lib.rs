@@ -1,10 +1,9 @@
 mod github;
-// mod llm; 
 mod models;
-// mod utils; 
+// mod llm;
+// mod utils;
 
-// struct Repository
-use crate::models::{Repository, GitHubUser};
+use crate::models::{GitHubUser, Repository};
 use ic_cdk::api::management_canister::http_request::{HttpResponse, TransformArgs};
 
 #[ic_cdk::update]

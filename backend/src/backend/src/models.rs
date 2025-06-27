@@ -1,3 +1,4 @@
+// BAGIAN 'USE' STATEMENT YANG SEBELUMNYA HILANG
 use candid::{CandidType, Principal};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -56,20 +57,22 @@ pub struct BadgeAttribute {
 pub struct GitHubAnalysis {
     pub username: String,
     pub total_commits: u32,
-    pub languages: HashMap<String, u32>, 
+    pub languages: HashMap<String, u32>,
     pub repositories: Vec<Repository>,
     pub llm_insights: LLMAnalysis,
     pub analyzed_at: u64,
 }
 
-#[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
+#[derive(CandidType, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct Repository {
     pub name: String,
     pub description: Option<String>,
     pub language: Option<String>,
+    #[serde(rename = "stargazers_count")]
     pub stars: u32,
+    #[serde(rename = "forks_count")]
     pub forks: u32,
-    pub commits: u32,
+    #[serde(rename = "fork")]
     pub is_fork: bool,
 }
 
@@ -82,7 +85,6 @@ pub struct LLMAnalysis {
     pub analysis_summary: String,
 }
 
-// Ini untuk handling HTTP requests and responses
 #[derive(CandidType, Deserialize)]
 pub struct HttpRequest {
     pub method: String,
@@ -104,7 +106,7 @@ pub struct HttpHeader {
     pub value: String,
 }
 
-#[derive(CandidType, serde::Deserialize, Clone, Debug)]
+#[derive(CandidType, serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct GitHubUser {
     pub login: String,
     pub name: Option<String>,
