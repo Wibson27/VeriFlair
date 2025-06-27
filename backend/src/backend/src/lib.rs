@@ -27,14 +27,19 @@ thread_local! {
 
 static OAUTH_CLIENT_ID: RefCell<String> = RefCell::new(String::new());
 static OAUTH_CLIENT_SECRET: RefCell<String> = RefCell::new(String::new());
+static NFT_CANISTER_ID: RefCell<Principal> = RefCell::new(Principal::anonymous());
 
 #[ic_cdk::init]
-fn init(client_id: String, client_secret: String) {
+fn init(client_id: String, client_secret: String, nft_canister_id: Principal) {
     OAUTH_CLIENT_ID.with(|id| {
         *id.borrow_mut() = client_id;
     });
     OAUTH_CLIENT_SECRET.with(|secret| {
         *secret.borrow_mut() = client_secret;
+    });
+    // Simpan ID canister NFT
+    NFT_CANISTER_ID.with(|id| {
+        *id.borrow_mut() = nft_canister_id;
     });
 }
 
@@ -98,7 +103,26 @@ async fn link_and_analyze_github(github_username: String) -> Result<UserProfile,
             metadata: BadgeMetadata { image_url: "".to_string(), animation_url: None, attributes: vec![] },
         };
         if !user_profile.badges.iter().any(|b| b.id == new_badge.id) {
-            user_profile.badges.push(new_badge);
+            let nft_canister = NFT_CANISTER_ID.with(|id| *id.borrow());
+
+            // Ubah metadata badge menjadi format JSON (text) sesuai permintaan fungsi mint di canister NFT
+            let metadata_json = serde_json::to_string(&new_badge.metadata).expect("Failed to serialize badge metadata.");
+
+            // Lakukan panggilan ke fungsi 'mint' di canister NFT
+            let mint_result: Result<(u64,), _> = ic_cdk::call(
+                nft_canister,
+                "mint", // Nama fungsi di canister NFT
+                (caller, metadata_json) // Argumen yang dikirim: Principal user dan metadata
+            ).await;
+
+            if let Ok((token_id,)) = mint_result {
+                ic_cdk::println!("Successfully minted badge for user {} with token ID {}", caller, token_id);
+                // Hanya tambahkan badge ke profil JIKA minting berhasil
+                user_profile.badges.push(new_badge);
+            } else {
+                // Jika minting gagal, kita bisa mencatat errornya
+                ic_cdk::println!("Failed to mint badge for user {}: {:?}", caller, mint_result.err());
+            }
         }
     }
 
