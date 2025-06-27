@@ -1,11 +1,9 @@
-// BAGIAN 'USE' STATEMENT YANG SUDAH DIPERBAIKI
 use candid::{CandidType, Principal};
-use ic_stable_structures::{storable::Bound, Storable}; // Path 'Bound' yang benar
+use ic_stable_structures::{storable::Bound, Storable}; 
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 use std::collections::HashMap;
 
-// DEFINISI 'BADGE' DAN KAWAN-KAWANNYA HARUS ADA SEBELUM 'USERPROFILE'
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
 pub struct BadgeAttribute {
     pub trait_type: String,
@@ -45,7 +43,6 @@ pub struct Badge {
     pub metadata: BadgeMetadata,
 }
 
-// SEKARANG 'USERPROFILE' BISA DIDEFINISIKAN KARENA 'BADGE' SUDAH DIKENALI
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
 pub struct UserProfile {
     #[serde(rename = "Principal")] 
@@ -58,7 +55,6 @@ pub struct UserProfile {
     pub updated_at: u64,
 }
 
-// IMPLEMENTASI STORABLE UNTUK USERPROFILE
 impl Storable for UserProfile {
     fn to_bytes(&self) -> Cow<[u8]> {
         candid::encode_one(self).unwrap().into()
@@ -71,7 +67,6 @@ impl Storable for UserProfile {
     const BOUND: Bound = Bound::Unbounded;
 }
 
-// SISA STRUCT LAINNYA
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
 pub struct LLMAnalysis {
     pub code_quality_score: f32,

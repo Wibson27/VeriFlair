@@ -1,9 +1,6 @@
 mod github;
 mod models;
-// mod llm;
-// mod utils;
 
-// --- USE STATEMENTS ---
 use crate::models::{Badge, BadgeCategory, BadgeTier, BadgeMetadata, GitHubUser, Repository, UserProfile};
 use candid::Principal;
 use futures::join;
@@ -13,7 +10,7 @@ use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
 use std::cell::RefCell;
 use std::collections::HashMap;
 
-// --- TIPE DATA & STATE MANAGEMENT ---
+
 type Memory = VirtualMemory<DefaultMemoryImpl>;
 type ProfileStore = StableBTreeMap<Principal, UserProfile, Memory>;
 
@@ -28,7 +25,19 @@ thread_local! {
     );
 }
 
-// --- FUNGSI PUBLIK ---
+static OAUTH_CLIENT_ID: RefCell<String> = RefCell::new(String::new());
+static OAUTH_CLIENT_SECRET: RefCell<String> = RefCell::new(String::new());
+
+#[ic_cdk::init]
+fn init(client_id: String, client_secret: String) {
+    OAUTH_CLIENT_ID.with(|id| {
+        *id.borrow_mut() = client_id;
+    });
+    OAUTH_CLIENT_SECRET.with(|secret| {
+        *secret.borrow_mut() = client_secret;
+    });
+}
+
 #[ic_cdk::update]
 async fn link_and_analyze_github(github_username: String) -> Result<UserProfile, String> {
     let caller = ic_cdk::caller();
@@ -37,7 +46,7 @@ async fn link_and_analyze_github(github_username: String) -> Result<UserProfile,
         return Err("GitHub username tidak boleh kosong.".to_string());
     }
 
-    // Panggil API GitHub secara paralel
+    // buat call API GitHub
     let (profile_result, repos_result) = join!(
         github::fetch_user_profile(&github_username),
         github::fetch_user_repos(&github_username)
@@ -46,7 +55,7 @@ async fn link_and_analyze_github(github_username: String) -> Result<UserProfile,
     let github_profile = profile_result?;
     let github_repos = repos_result?;
 
-    // Lakukan kalkulasi reputasi dan analisis bahasa
+    // untuk hitung reputasi dan analisis bahasa
     let mut score: u32 = 0;
     let mut language_stats: HashMap<String, u64> = HashMap::new();
 
@@ -62,7 +71,7 @@ async fn link_and_analyze_github(github_username: String) -> Result<UserProfile,
 
     let top_language = language_stats.into_iter().max_by_key(|&(_, count)| count);
 
-    // Buat atau perbarui profil pengguna
+    // buat atau update profil user
     let mut user_profile = USER_PROFILES.with(|p| p.borrow().get(&caller)).unwrap_or_else(|| UserProfile {
         Principal: caller,
         github_username: "".to_string(),
@@ -93,12 +102,17 @@ async fn link_and_analyze_github(github_username: String) -> Result<UserProfile,
         }
     }
 
-    // Simpan profil yang sudah diperbarui & kembalikan
+    // simpan profil yang sudah diupdate
     USER_PROFILES.with(|profiles| {
         profiles.borrow_mut().insert(caller, user_profile.clone());
     });
 
     Ok(user_profile)
+}
+
+#[ic_cdk::query]
+fn get_github_oauth_client_id() -> String {
+    OAUTH_CLIENT_ID.with(|id| id.borrow().clone())
 }
 
 ic_cdk::export_candid!();

@@ -18,6 +18,6 @@ serde_json.workspace = true
 reqwest.workspace = true
 base64 = "0.22.1"
 sha2 = "0.10"
-futures.workspace = true # <-- TAMBAHKAN BARIS INI
+futures.workspace = true 
 
 

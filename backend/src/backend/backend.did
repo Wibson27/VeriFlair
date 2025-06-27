@@ -1,11 +1,11 @@
-// --- Tipe Data untuk Lencana (Badges) ---
+// --- data type buat badges ---
 type BadgeAttribute = record { trait_type: text; value: text; };
 type BadgeMetadata = record { image_url: text; animation_url: opt text; attributes: vec BadgeAttribute; };
 type BadgeTier = variant { Bronze; Silver; Gold; Platinum; };
 type BadgeCategory = variant { Language: text; Contribution: text; Achievement: text; };
 type Badge = record { id: text; name: text; description: text; category: BadgeCategory; tier: BadgeTier; earned_at: nat64; metadata: BadgeMetadata; };
 
-// --- Tipe Data Utama Pengguna ---
+// --- data type user ---
 type UserProfile = record {
   Principal: principal;
   github_username: text;
@@ -16,14 +16,15 @@ type UserProfile = record {
   updated_at: nat64;
 };
 
-// --- Tipe Data untuk HTTPS Outcalls ---
+// --- data type buat HTTPS outcalls ---
 type HeaderField = record { text; text; };
 type CanisterHttpResponsePayload = record { status: nat; headers: vec HeaderField; body: blob; };
 type TransformArgs = record { context: blob; response: CanisterHttpResponsePayload; };
 
-// --- Definisi Service (Fungsi Publik) ---
+// --- service ---
 service : {
+  "get_github_oauth_client_id": () -> (text) query;
+
   "link_and_analyze_github": (text) -> (variant { Ok: UserProfile; Err: text; });
-  // Fungsi transform tetap ada sebagai helper internal
   "transform": (TransformArgs) -> (CanisterHttpResponsePayload) query;
 }
