@@ -1,19 +1,63 @@
-type HttpHeader = record { value : text; name : text };
-type HttpResponse = record {
-  status : nat;
-  body : blob;
-  headers : vec HttpHeader;
+// --- Tipe Data untuk Lencana (Badges) ---
+type BadgeAttribute = record {
+  trait_type: text;
+  value: text;
 };
-type TransformArgs = record { context : blob; response : HttpResponse };
+
+type BadgeMetadata = record {
+  image_url: text;
+  animation_url: opt text;
+  attributes: vec BadgeAttribute;
+};
+
+type BadgeTier = variant {
+  Bronze;
+  Silver;
+  Gold;
+  Platinum;
+};
+
+type BadgeCategory = variant {
+  Language: text;
+  Contribution: text;
+  Achievement: text;
+};
+
+type Badge = record {
+  id: text;
+  name: text;
+  description: text;
+  category: BadgeCategory;
+  tier: BadgeTier;
+  earned_at: nat64;
+  metadata: BadgeMetadata;
+};
+
+// --- Tipe Data Utama Pengguna ---
 type UserProfile = record {
-  github_username : text;
-  updated_at : nat64;
-  Principal : principal;
-  created_at : nat64;
-  last_analysis : opt nat64;
-  reputation_score : nat32;
+  Principal: principal;
+  github_username: text;
+  badges: vec Badge; // <-- Field ini kita kembalikan
+  reputation_score: nat32;
+  last_analysis: opt nat64;
+  created_at: nat64;
+  updated_at: nat64;
 };
+
+// --- Tipe Data untuk HTTPS Outcalls ---
+type HeaderField = record { text; text; };
+type CanisterHttpResponsePayload = record {
+  status: nat;
+  headers: vec HeaderField;
+  body: blob;
+};
+type TransformArgs = record {
+  context: blob;
+  response: CanisterHttpResponsePayload;
+};
+
+// --- Definisi Service (Fungsi Publik) ---
 service : {
-  create_or_get_profile : () -> (UserProfile);
-  transform : (TransformArgs) -> (HttpResponse) query;
+  "create_or_get_profile": () -> (UserProfile);
+  "transform": (TransformArgs) -> (CanisterHttpResponsePayload) query;
 }

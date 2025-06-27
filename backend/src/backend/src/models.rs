@@ -48,9 +48,10 @@ pub struct Badge {
 // SEKARANG 'USERPROFILE' BISA DIDEFINISIKAN KARENA 'BADGE' SUDAH DIKENALI
 #[derive(CandidType, Serialize, Deserialize, Clone, Debug)]
 pub struct UserProfile {
-    pub principal: Principal,
+    #[serde(rename = "Principal")] 
+    pub Principal: Principal,
     pub github_username: String,
-    //pub badges: Vec<Badge>,
+    pub badges: Vec<Badge>,
     pub reputation_score: u32,
     pub last_analysis: Option<u64>,
     pub created_at: u64,
