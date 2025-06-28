@@ -2,21 +2,27 @@ import { AuthClient } from '@dfinity/auth-client';
 import { Actor, HttpAgent } from '@dfinity/agent';
 import { Principal } from '@dfinity/principal';
 import { idlFactory } from '../declarations/auth';
-import type { AuthService, UserSession } from '../types/auth';
 
+/**
+ * Internet Identity Auth Service for VeriFlair
+ * Follows the architecture specified in VeriFlair documentation Section 5.1
+ */
 class InternetIdentityAuthService {
-  private authClient: AuthClient | null = null;
-  private actor: AuthService | null = null;
-  private isInitialized = false;
+  constructor() {
+    this.authClient = null;
+    this.actor = null;
+    this.isInitialized = false;
+  }
 
   // Environment configuration
-  private getConfig() {
-    const isLocal = import.meta.env.VITE_DFX_NETWORK === 'local';
+  getConfig() {
+    const isLocal = process.env.REACT_APP_DFX_NETWORK === 'local' ||
+                   process.env.NODE_ENV === 'development';
 
     return {
-      authCanisterId: import.meta.env.VITE_AUTH_CANISTER_ID || 'uxrrr-q7777-77774-qaaaq-cai',
+      authCanisterId: process.env.REACT_APP_AUTH_CANISTER_ID || 'uxrrr-q7777-77774-qaaaq-cai',
       internetIdentityUrl: isLocal
-        ? 'http://127.0.0.1:4943/?canisterId=rdmx6-jaaaa-aaaah-qdrqq-cai'
+        ? 'http://127.0.0.1:4943/?canister=rdmx6-jaaaa-aaaah-qdrqq-cai'
         : 'https://identity.ic0.app',
       host: isLocal ? 'http://127.0.0.1:4943' : 'https://icp-api.io',
       isLocal,
@@ -24,7 +30,7 @@ class InternetIdentityAuthService {
   }
 
   // Initialize the auth client
-  async initialize(): Promise<boolean> {
+  async initialize() {
     if (this.isInitialized) return this.isAuthenticated();
 
     try {
@@ -71,7 +77,7 @@ class InternetIdentityAuthService {
   }
 
   // Login with Internet Identity
-  async login(): Promise<boolean> {
+  async login() {
     if (!this.authClient) {
       throw new Error('Auth client not initialized');
     }
@@ -80,7 +86,7 @@ class InternetIdentityAuthService {
     console.log('Starting login with config:', config);
 
     return new Promise((resolve, reject) => {
-      this.authClient!.login({
+      this.authClient.login({
         identityProvider: config.internetIdentityUrl,
         maxTimeToLive: BigInt(7 * 24 * 60 * 60 * 1000 * 1000 * 1000), // 7 days
         onSuccess: async () => {
@@ -90,7 +96,7 @@ class InternetIdentityAuthService {
 
             // Authenticate with your canister
             console.log('Authenticating with auth canister...');
-            const result = await this.actor!.authenticate_user();
+            const result = await this.actor.authenticate_user();
 
             if ('Ok' in result) {
               console.log('Successfully authenticated with canister:', result.Ok);
@@ -113,7 +119,7 @@ class InternetIdentityAuthService {
   }
 
   // Logout
-  async logout(): Promise<void> {
+  async logout() {
     try {
       // Logout from canister
       if (this.actor) {
@@ -134,17 +140,17 @@ class InternetIdentityAuthService {
   }
 
   // Check if authenticated
-  isAuthenticated(): boolean {
+  isAuthenticated() {
     return this.authClient?.isAuthenticated() ?? false;
   }
 
   // Get current user principal
-  getPrincipal(): Principal | null {
+  getPrincipal() {
     return this.authClient?.getIdentity()?.getPrincipal() ?? null;
   }
 
   // Get current session
-  async getCurrentSession(): Promise<UserSession | null> {
+  async getCurrentSession() {
     if (!this.actor) return null;
 
     try {
@@ -156,11 +162,11 @@ class InternetIdentityAuthService {
   }
 
   // Update GitHub username
-  async setGitHubUsername(username: string): Promise<boolean> {
+  async setGitHubUsername(username) {
     if (!this.actor) return false;
 
     try {
-      const result = await this.actor.create_session(username);
+      const result = await this.actor.create_session([username]);
 
       if ('Ok' in result) {
         console.log('GitHub username updated:', result.Ok);
@@ -176,7 +182,7 @@ class InternetIdentityAuthService {
   }
 
   // Renew session
-  async renewSession(): Promise<boolean> {
+  async renewSession() {
     if (!this.actor) return false;
 
     try {
@@ -196,7 +202,7 @@ class InternetIdentityAuthService {
   }
 
   // Get canister health
-  async getHealth(): Promise<string> {
+  async getHealth() {
     if (!this.actor) return 'Actor not initialized';
 
     try {
@@ -208,7 +214,7 @@ class InternetIdentityAuthService {
   }
 
   // Private: Create actor for canister communication
-  private async createActor(): Promise<void> {
+  async createActor() {
     if (!this.authClient) throw new Error('Auth client not initialized');
 
     const config = this.getConfig();
@@ -229,7 +235,7 @@ class InternetIdentityAuthService {
       });
     }
 
-    this.actor = Actor.createActor<AuthService>(idlFactory, {
+    this.actor = Actor.createActor(idlFactory, {
       agent,
       canisterId: config.authCanisterId,
     });
@@ -238,7 +244,7 @@ class InternetIdentityAuthService {
   }
 
   // Private: Verify session is still valid
-  private async verifySession(): Promise<boolean> {
+  async verifySession() {
     if (!this.actor) return false;
 
     try {

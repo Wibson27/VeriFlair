@@ -1,8 +1,38 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { authService } from '../services/authService';
 
+/**
+ * @typedef {Object} UserSession
+ * @property {import('@dfinity/principal').Principal} user_principal
+ * @property {string|null} github_username
+ * @property {bigint} created_at
+ * @property {bigint} last_active
+ * @property {bigint} expires_at
+ * @property {Object} role
+ * @property {boolean} is_verified
+ */
+
+/**
+ * @typedef {Object} AuthContextType
+ * @property {boolean} isInitialized
+ * @property {boolean} isAuthenticated
+ * @property {UserSession|null} user
+ * @property {import('@dfinity/principal').Principal|null} principal
+ * @property {() => Promise<void>} login
+ * @property {() => Promise<void>} logout
+ * @property {(username: string) => Promise<boolean>} setGitHubUsername
+ * @property {() => Promise<boolean>} renewSession
+ * @property {string|null} error
+ * @property {boolean} isLoading
+ */
+
 const AuthContext = createContext(null);
 
+/**
+ * Auth Provider Component
+ * @param {Object} props
+ * @param {React.ReactNode} props.children
+ */
 export const AuthProvider = ({ children }) => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -40,7 +70,7 @@ export const AuthProvider = ({ children }) => {
       setIsInitialized(true);
     } catch (err) {
       console.error('Auth initialization failed:', err);
-      setError(err.message || 'Authentication initialization failed');
+      setError(err?.message || 'Authentication initialization failed');
     } finally {
       setIsLoading(false);
     }
@@ -67,7 +97,8 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (err) {
       console.error('Login failed:', err);
-      setError(err.message || 'Login failed');
+      const errorMessage = err?.message || 'Login failed';
+      setError(errorMessage);
       throw err;
     } finally {
       setIsLoading(false);
@@ -89,7 +120,7 @@ export const AuthProvider = ({ children }) => {
       console.log('Logout complete');
     } catch (err) {
       console.error('Logout failed:', err);
-      setError(err.message || 'Logout failed');
+      setError(err?.message || 'Logout failed');
     } finally {
       setIsLoading(false);
     }
@@ -110,7 +141,7 @@ export const AuthProvider = ({ children }) => {
       return success;
     } catch (err) {
       console.error('GitHub username update failed:', err);
-      setError(err.message || 'Failed to update GitHub username');
+      setError(err?.message || 'Failed to update GitHub username');
       return false;
     }
   };
@@ -130,7 +161,7 @@ export const AuthProvider = ({ children }) => {
       return success;
     } catch (err) {
       console.error('Session renewal failed:', err);
-      setError(err.message || 'Failed to renew session');
+      setError(err?.message || 'Failed to renew session');
       return false;
     }
   };
@@ -153,6 +184,10 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+/**
+ * useAuth Hook
+ * @returns {AuthContextType}
+ */
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

@@ -2,52 +2,66 @@
 
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './hooks/useAuth';
 
-// Impor semua halaman dan komponen layout
+// Import all pages and layout components
 import LandingPage from './pages/LandingPage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import ProfilePage from './pages/ProfilePage';
 import UserDetailPage from './pages/UserDetailPage';
-import MainLayout from './components/MainLayout'; // <-- Impor layout kita
+import MainLayout from './components/MainLayout';
+import ProtectedRoute from './components/ProtectedRoute';
+import AuthTest from './components/AuthTest';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* RUTE 1: LandingPage dirender sendirian, tanpa pembungkus apa pun. */}
-        <Route path="/" element={<LandingPage />} />
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* ROUTE 1: LandingPage rendered alone, without any wrapper. */}
+          <Route path="/" element={<LandingPage />} />
 
-        {/* RUTE 2: LeaderboardPage DIBUNGKUS oleh MainLayout. */}
-        <Route 
-          path="/leaderboard" 
-          element={
-            <MainLayout>
-              <LeaderboardPage />
-            </MainLayout>
-          } 
-        />
-        
-        {/* RUTE 3: ProfilePage DIBUNGKUS oleh MainLayout. */}
-        <Route 
-          path="/profile" 
-          element={
-            <MainLayout>
-              <ProfilePage />
-            </MainLayout>
-          } 
-        />
-        
-        {/* RUTE 4: UserDetailPage DIBUNGKUS oleh MainLayout. */}
-        <Route 
-          path="/users/:username" 
-          element={
-            <MainLayout>
-              <UserDetailPage />
-            </MainLayout>
-          } 
-        />
-      </Routes>
-    </BrowserRouter>
+          {/* Auth Test Route - for development/testing Internet Identity */}
+          <Route path="/auth-test" element={<AuthTest />} />
+
+          {/* ROUTE 2: LeaderboardPage PROTECTED and WRAPPED by MainLayout. */}
+          <Route
+            path="/leaderboard"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <LeaderboardPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ROUTE 3: ProfilePage PROTECTED and WRAPPED by MainLayout. */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <ProfilePage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ROUTE 4: UserDetailPage PROTECTED and WRAPPED by MainLayout. */}
+          <Route
+            path="/users/:username"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <UserDetailPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

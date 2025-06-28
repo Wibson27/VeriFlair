@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 
-const AuthTest: React.FC = () => {
+const AuthTest = () => {
   const {
     isInitialized,
     isAuthenticated,
@@ -52,16 +52,22 @@ const AuthTest: React.FC = () => {
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold mb-6 text-center">
+      <h2 className="text-2xl font-bold mb-6 text-center text-gray-900">
         VeriFlair - Internet Identity Test
       </h2>
 
       {/* Status */}
       <div className="mb-6 p-4 bg-gray-50 rounded">
-        <h3 className="font-semibold mb-2">Status:</h3>
-        <p>Initialized: <span className="font-mono">{isInitialized ? '✅' : '❌'}</span></p>
-        <p>Authenticated: <span className="font-mono">{isAuthenticated ? '✅' : '❌'}</span></p>
-        <p>Loading: <span className="font-mono">{isLoading ? '⏳' : '✅'}</span></p>
+        <h3 className="font-semibold mb-2 text-gray-900">Status:</h3>
+        <p className="text-gray-700">
+          Initialized: <span className="font-mono">{isInitialized ? '✅' : '❌'}</span>
+        </p>
+        <p className="text-gray-700">
+          Authenticated: <span className="font-mono">{isAuthenticated ? '✅' : '❌'}</span>
+        </p>
+        <p className="text-gray-700">
+          Loading: <span className="font-mono">{isLoading ? '⏳' : '✅'}</span>
+        </p>
       </div>
 
       {/* Error Display */}
@@ -91,7 +97,7 @@ const AuthTest: React.FC = () => {
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded">
           <h3 className="font-semibold mb-3 text-green-800">User Information:</h3>
 
-          <div className="space-y-2 text-sm">
+          <div className="space-y-2 text-sm text-gray-700">
             <div>
               <strong>Principal:</strong>
               <p className="font-mono text-xs break-all bg-white p-2 rounded mt-1">
@@ -134,7 +140,7 @@ const AuthTest: React.FC = () => {
               value={githubInput}
               onChange={(e) => setGithubInput(e.target.value)}
               placeholder="Enter GitHub username"
-              className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-gray-900"
             />
             <button
               onClick={handleSetGitHub}
@@ -161,11 +167,11 @@ const AuthTest: React.FC = () => {
       )}
 
       {/* Debug Info */}
-      <div className="mt-6 p-4 bg-gray-100 rounded text-xs">
+      <div className="mt-6 p-4 bg-gray-100 rounded text-xs text-gray-700">
         <h4 className="font-semibold mb-2">Debug Info:</h4>
-        <p><strong>Environment:</strong> {import.meta.env.VITE_DFX_NETWORK || 'local'}</p>
-        <p><strong>Auth Canister:</strong> {import.meta.env.VITE_AUTH_CANISTER_ID || 'Not set'}</p>
-        <p><strong>II URL:</strong> {import.meta.env.VITE_INTERNET_IDENTITY_URL || 'Default local'}</p>
+        <p><strong>Environment:</strong> {process.env.REACT_APP_DFX_NETWORK || 'local'}</p>
+        <p><strong>Auth Canister:</strong> {process.env.REACT_APP_AUTH_CANISTER_ID || 'Not set'}</p>
+        <p><strong>IC Host:</strong> {process.env.REACT_APP_IC_HOST || 'Default local'}</p>
       </div>
     </div>
   );
