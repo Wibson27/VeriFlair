@@ -1,7 +1,7 @@
 // Auto-generated declarations for auth canister
-// Matching auth.did file exactly
+// This matches the auth.did file from your backend
 
-export const idlFactory = ({ IDL }: any) => {
+export const idlFactory = ({ IDL }) => {
   const UserRole = IDL.Variant({
     'User': IDL.Null,
     'Admin': IDL.Null,
@@ -38,5 +38,3 @@ export const idlFactory = ({ IDL }: any) => {
     'health_check': IDL.Func([], [IDL.Text], ['query']),
   });
 };
-
-export const canisterId = process.env.VITE_AUTH_CANISTER_ID;
