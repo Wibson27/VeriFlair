@@ -6,7 +6,7 @@ const AuthTest = () => {
     isInitialized,
     isAuthenticated,
     user,
-    principal,
+    // principal,
     login,
     logout,
     setGitHubUsername,
