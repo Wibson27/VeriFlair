@@ -10,38 +10,31 @@ export default function TopSection() {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   const handleGetVerified = async () => {
-    // If already authenticated, go directly to leaderboard
     if (isAuthenticated) {
+      // If already authenticated, go directly to leaderboard
       navigate('/leaderboard');
       return;
     }
 
     try {
       setIsAuthenticating(true);
-      console.log('Starting Internet Identity login from landing page...');
+      console.log('Starting Internet Identity login...');
 
-      // Trigger Internet Identity login
-      await login();
+      const success = await login();
 
-      // After successful login, redirect to leaderboard
-      console.log('Login successful, redirecting to leaderboard...');
-      navigate('/leaderboard');
-
+      if (success) {
+        console.log('Login successful, redirecting to leaderboard');
+        navigate('/leaderboard');
+      }
     } catch (error) {
-      console.error('Authentication failed:', error);
-      // You could show an error message here
-      alert('Authentication failed. Please try again.');
+      console.error('Login failed:', error);
+      alert('Login failed. Please try again.');
     } finally {
       setIsAuthenticating(false);
     }
   };
 
-  const buttonLoading = isLoading || isAuthenticating;
-  const buttonText = isAuthenticated
-    ? 'Go to Leaderboard'
-    : buttonLoading
-      ? 'Authenticating...'
-      : 'Get Verified Now';
+  const isButtonLoading = isLoading || isAuthenticating;
 
   return (
     <section
@@ -72,23 +65,27 @@ export default function TopSection() {
             Build your on-chain reputation
           </h1>
           <p className="font-sfpro font-normal max-w-2xl mx-auto text-gray-200 text-lg mb-6">
-            VeriFlair links your GitHub to your Internet Identity for verifiable, on-chain developer credentials.
+            VeriFlair links your GitHub to your Internet Identity...
           </p>
 
           <button
             onClick={handleGetVerified}
-            disabled={buttonLoading}
-            className="relative inline-block px-6 py-3 font-sfpro font-normal text-white rounded-full group overflow-hidden transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isButtonLoading}
+            className="relative inline-block px-6 py-3 font-sfpro font-normal text-white rounded-full group overflow-hidden transition-all duration-300 disabled:opacity-50"
           >
             {/* Gradient border layer */}
             <span className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
 
             {/* Inner layer (solid bg) */}
             <span className="relative z-10 block bg-[#0E0E0E] group-hover:bg-white group-hover:text-[#1D2460] px-6 py-3 rounded-full border border-white transition-all duration-300">
-              {buttonLoading && (
-                <span className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+              {isButtonLoading ? (
+                <span className="flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                  {isAuthenticated ? 'Redirecting...' : 'Connecting...'}
+                </span>
+              ) : (
+                isAuthenticated ? 'Go to Leaderboard' : 'Get Verified Now'
               )}
-              {buttonText}
             </span>
           </button>
         </div>
