@@ -1,6 +1,6 @@
 [package]
 name = "backend"
-version = "0.1.0" 
+version = "0.1.0"
 edition = "2021"
 
 [dependencies]
@@ -11,7 +11,7 @@ ic-stable-structures.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 reqwest.workspace = true
-base64 = "0.21"
+base64 = "0.22.1"
 sha2 = "0.10"
 
 [lib]

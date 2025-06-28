@@ -5,7 +5,9 @@
   "dependencies": {
     "@dfinity/agent": "^2.4.1",
     "@dfinity/auth-client": "^2.4.1",
+    "@dfinity/candid": "^2.4.1",
     "@dfinity/identity": "^2.4.1",
+    "@dfinity/principal": "^2.4.1",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^15.0.0",
