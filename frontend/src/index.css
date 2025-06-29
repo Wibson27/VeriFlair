@@ -78,3 +78,10 @@ code {
   transform-origin: left center;
   z-index: 0;
 }
+
+.atropos-scene,
+.atropos-rotate,
+.atropos-scale,
+.atropos-inner {
+  background: transparent !important;
+}

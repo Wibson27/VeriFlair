@@ -1,47 +1,16 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import React from 'react';
+import { Link } from 'react-router-dom'; // 1. Impor Link
 import bgImage from '../../assets/image/LandingPage/bgtop.png';
-import ShootingStars from '../../styles/ShootingStars';
+import ShootingStars from '../../styles/ShootingStars'; // sesuaikan path
+import logoImage from '../../assets/image/logo.png'; // Ganti 'logo.png' dengan nama file Anda
 
 export default function TopSection() {
-  const navigate = useNavigate();
-  const { login, isAuthenticated, isLoading } = useAuth();
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
-
-  const handleGetVerified = async () => {
-    if (isAuthenticated) {
-      // If already authenticated, go directly to leaderboard
-      navigate('/leaderboard');
-      return;
-    }
-
-    try {
-      setIsAuthenticating(true);
-      console.log('Starting Internet Identity login...');
-
-      const success = await login();
-
-      if (success) {
-        console.log('Login successful, redirecting to leaderboard');
-        navigate('/leaderboard');
-      }
-    } catch (error) {
-      console.error('Login failed:', error);
-      alert('Login failed. Please try again.');
-    } finally {
-      setIsAuthenticating(false);
-    }
-  };
-
-  const isButtonLoading = isLoading || isAuthenticating;
-
   return (
     <section
       className="relative w-full bg-no-repeat bg-top bg-[length:100%_1025px] text-white overflow-hidden"
       style={{
         backgroundImage: `url(${bgImage})`,
-        minHeight: '1025px',
+        minHeight: '1025px', 
       }}
     >
       {/* Shooting Stars */}
@@ -50,7 +19,7 @@ export default function TopSection() {
       {/* Navbar */}
       <nav className="flex justify-between items-center px-6 py-6 text-white relative z-10">
         <div className="flex items-center gap-2">
-          <div className="bg-white text-black font-bold px-2 py-1 rounded">logo</div>
+          <img src={logoImage} alt="VeriFlair Logo" className="h-10 w-auto" /> {/* Sesuaikan tinggi (h-10) sesuai kebutuhan */}
           <span className="text-lg font-semibold">VeriFlair</span>
         </div>
       </nav>
@@ -67,27 +36,19 @@ export default function TopSection() {
           <p className="font-sfpro font-normal max-w-2xl mx-auto text-gray-200 text-lg mb-6">
             VeriFlair links your GitHub to your Internet Identity...
           </p>
+          <Link
+            to="/leaderboard"
+            className="relative inline-block px-6 py-3 font-sfpro font-normal text-white rounded-full group overflow-hidden transition-all duration-300"
+            >
+              {/* Gradient border layer */}
+              <span className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+              
+              {/* Inner layer (solid bg) */}
+              <span className="relative z-10 block bg-[#0E0E0E] group-hover:bg-white group-hover:text-[#1D2460] px-6 py-3 rounded-full border border-white transition-all duration-300">
+                  Get Verified Now
+              </span>
+            </Link>
 
-          <button
-            onClick={handleGetVerified}
-            disabled={isButtonLoading}
-            className="relative inline-block px-6 py-3 font-sfpro font-normal text-white rounded-full group overflow-hidden transition-all duration-300 disabled:opacity-50"
-          >
-            {/* Gradient border layer */}
-            <span className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-
-            {/* Inner layer (solid bg) */}
-            <span className="relative z-10 block bg-[#0E0E0E] group-hover:bg-white group-hover:text-[#1D2460] px-6 py-3 rounded-full border border-white transition-all duration-300">
-              {isButtonLoading ? (
-                <span className="flex items-center gap-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
-                  {isAuthenticated ? 'Redirecting...' : 'Connecting...'}
-                </span>
-              ) : (
-                isAuthenticated ? 'Go to Leaderboard' : 'Get Verified Now'
-              )}
-            </span>
-          </button>
         </div>
       </div>
     </section>
