@@ -36,7 +36,7 @@ const BadgeCard = ({
           <img 
             src={badgeSrc} 
             alt="Skill Badge" 
-            className="w-2/3"
+            className="w-2/3 h-24 object-contain"
           />
         </div>
 
