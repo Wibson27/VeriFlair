@@ -38,7 +38,7 @@ pub async fn exchange_oauth_code(oauth_request: GitHubOAuthRequest) -> Result<Gi
         url: GITHUB_OAUTH_TOKEN_URL.to_string(),
         method: HttpMethod::POST,
         body: Some(body.into_bytes()),
-        max_response_bytes: Some(1024),
+        max_response_bytes: Some(8192), // INCREASED from 1024 to 8192
         transform: None,
         headers: vec![
             HttpHeader {
@@ -48,6 +48,10 @@ pub async fn exchange_oauth_code(oauth_request: GitHubOAuthRequest) -> Result<Gi
             HttpHeader {
                 name: "Content-Type".to_string(),
                 value: "application/x-www-form-urlencoded".to_string(),
+            },
+            HttpHeader {
+                name: "User-Agent".to_string(),
+                value: "VeriFlair-ICP-Canister".to_string(),
             },
         ],
     };
@@ -78,7 +82,7 @@ pub async fn fetch_github_user(access_token: &str) -> Result<GitHubData, String>
         url,
         method: HttpMethod::GET,
         body: None,
-        max_response_bytes: Some(2048),
+        max_response_bytes: Some(16384), // INCREASED from 2048 to 16384
         transform: None,
         headers: vec![
             HttpHeader {
@@ -137,7 +141,7 @@ pub async fn fetch_user_repositories(username: &str, access_token: Option<&str>)
         url,
         method: HttpMethod::GET,
         body: None,
-        max_response_bytes: Some(32768), // Larger for repository list
+        max_response_bytes: Some(65536), // INCREASED from 32768 to 65536 for large repo lists
         transform: None,
         headers,
     };
@@ -238,7 +242,7 @@ pub async fn validate_github_username(username: &str) -> Result<bool, String> {
         url,
         method: HttpMethod::GET,
         body: None,
-        max_response_bytes: Some(1024),
+        max_response_bytes: Some(4096), // INCREASED from 1024 to 4096
         transform: None,
         headers: vec![
             HttpHeader {

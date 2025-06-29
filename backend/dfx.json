@@ -4,17 +4,32 @@
     "auth": {
       "type": "rust",
       "candid": "src/auth/auth.did",
-      "package": "auth"
+      "package": "auth",
+      "metadata": [
+        {
+          "name": "candid:service"
+        }
+      ]
     },
     "backend": {
       "type": "rust",
       "candid": "src/backend/backend.did",
-      "package": "backend"
+      "package": "backend",
+      "metadata": [
+        {
+          "name": "candid:service"
+        }
+      ]
     },
     "nft": {
       "type": "rust",
       "candid": "src/nft/nft.did",
-      "package": "nft"
+      "package": "nft",
+      "metadata": [
+        {
+          "name": "candid:service"
+        }
+      ]
     },
     "internet_identity": {
       "type": "custom",

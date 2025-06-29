@@ -158,6 +158,11 @@ pub fn authenticate_user() -> Result<UserSession, String> {
     Ok(session)
 }
 
+#[update]
+fn create_test_session() -> Result<UserSession, String> {
+    create_session(Some("test_user".to_string()))
+}
+
 // Create/update session (for authenticated users to set GitHub username)
 #[update]
 pub fn create_session(github_username: Option<String>) -> Result<UserSession, String> {

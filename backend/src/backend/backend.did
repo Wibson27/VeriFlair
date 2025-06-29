@@ -1,66 +1,142 @@
-type BadgeRarity = variant {
-  Common;
-  Uncommon;
-  Rare;
-  Epic;
-  Legendary;
-};
-
-type Badge = record {
-  id : text;
-  name : text;
-  description : text;
-  earned_at : nat64;
-  rarity : BadgeRarity;
-  criteria : text;
+type UserProfile = record {
+  user_principal: principal;
+  github_username: text;
+  github_connected: bool;
+  github_data: opt GitHubData;
+  created_at: nat64;
+  updated_at: nat64;
+  last_github_sync: opt nat64;
+  reputation_score: nat64;
+  badges: vec Badge;
+  total_badges: nat32;
 };
 
 type GitHubData = record {
-  repos : nat32;
-  commits : nat32;
-  stars : nat32;
-  followers : nat32;
-  languages : vec text;
+  login: text;
+  name: opt text;
+  avatar_url: text;
+  bio: opt text;
+  public_repos: nat32;
+  followers: nat32;
+  following: nat32;
+  created_at: text;
+  updated_at: text;
 };
 
-type UserProfile = record {
-  user_principal : principal;
-  github_username : text;
-  created_at : nat64;
-  reputation_score : nat64;
-  badges : vec Badge;
-  github_data : opt GitHubData;
+type Badge = record {
+  id: text;
+  name: text;
+  description: text;
+  category: BadgeCategory;
+  tier: BadgeTier;
+  earned_at: nat64;
+  criteria_met: vec text;
+  score_achieved: nat32;
+  metadata: BadgeMetadata;
+};
+
+type BadgeCategory = variant {
+  Language: text;
+  Contribution: text;
+  Achievement: text;
+  Special: text;
+};
+
+type BadgeTier = variant {
+  Bronze1;
+  Bronze2;
+  Bronze3;
+  Silver1;
+  Silver2;
+  Silver3;
+  Gold1;
+  Gold2;
+  Gold3;
+};
+
+type BadgeMetadata = record {
+  image_url: text;
+  animation_url: opt text;
+  attributes: vec BadgeAttribute;
+  rarity_score: nat32;
+};
+
+type BadgeAttribute = record {
+  trait_type: text;
+  value: text;
+  display_type: opt text;
+};
+
+type GitHubOAuthRequest = record {
+  code: text;
+  state: text;
 };
 
 type GitHubAnalysis = record {
-  username : text;
-  total_repos : nat32;
-  total_commits : nat32;
-  languages : vec text;
-  contributions_this_year : nat32;
-  account_age_days : nat32;
-  followers : nat32;
-  following : nat32;
-  analyzed_at : nat64;
+  username: text;
+  total_repos: nat32;
+  total_commits: nat32;
+  total_stars_received: nat32;
+  total_forks_received: nat32;
+  analyzed_at: nat64;
+  commit_frequency_score: float32;
+  code_quality_score: float32;
+  community_engagement_score: float32;
 };
 
 type ProfileStats = record {
-  total_users : nat64;
-  total_badges_earned : nat64;
-  total_repositories_analyzed : nat64;
-  average_reputation : float64;
+  total_users: nat64;
+  total_badges_earned: nat64;
+  total_repositories_analyzed: nat64;
+  average_reputation: float64;
+  github_connected_users: nat64;
+  most_common_languages: vec record { text; nat32 };
 };
 
-service : {
-  create_profile : (text) -> (variant { Ok : UserProfile; Err : text });
-  get_profile : (opt principal) -> (opt UserProfile) query;
-  get_badges : (opt principal) -> (vec Badge) query;
-  get_leaderboard : (opt nat32) -> (vec UserProfile) query;
-  refresh_github_data : (text) -> (variant { Ok : UserProfile; Err : text });
-  perform_github_analysis : (text) -> (variant { Ok : GitHubAnalysis; Err : text });
-  get_llm_analysis : (text) -> (variant { Ok : text; Err : text });
-  greet : (text) -> (text) query;
-  health_check : () -> (text) query;
-  get_stats : () -> (ProfileStats) query;
-  get_api_info : () -> (text) query;
+type HttpRequest = record {
+  method: text;
+  url: text;
+  headers: vec record { text; text };
+  body: vec nat8;
+};
+
+type HttpResponse = record {
+  status_code: nat16;
+  headers: vec HttpHeader;
+  body: vec nat8;
+};
+
+type HttpHeader = record {
+  name: text;
+  value: text;
+};
+
+service : (principal, principal, text, text, opt text, opt text) -> {
+  // User Profile Management
+  create_initial_profile: () -> (variant { Ok: UserProfile; Err: text });
+  get_profile: (opt principal) -> (opt UserProfile) query;
+  get_badges: (opt principal) -> (vec Badge) query;
+
+  // GitHub Integration
+  connect_github_oauth: (GitHubOAuthRequest) -> (variant { Ok: UserProfile; Err: text });
+  sync_github_data: () -> (variant { Ok: UserProfile; Err: text });
+  disconnect_github: () -> (variant { Ok: UserProfile; Err: text });
+  validate_github_username: (text) -> (variant { Ok: bool; Err: text });
+  get_github_oauth_url: (text) -> (variant { Ok: text; Err: text });
+
+  // Analytics and Leaderboards
+  get_leaderboard: (opt nat32) -> (vec UserProfile) query;
+  get_github_analysis: (text) -> (opt GitHubAnalysis) query;
+  get_badge_statistics: () -> (vec record { text; nat32 }) query;
+  get_stats: () -> (ProfileStats) query;
+
+  // Admin Functions
+  admin_force_github_sync: (principal) -> (variant { Ok: text; Err: text });
+
+  // Health and Info
+  health_check: () -> (text) query;
+  get_api_info: () -> (text) query;
+
+  // HTTP Request handling for CORS
+  http_request: (HttpRequest) -> (HttpResponse) query;
 }

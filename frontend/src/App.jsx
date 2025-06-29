@@ -13,6 +13,9 @@ import MainLayout from './components/MainLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import AuthTest from './components/AuthTest';
 
+// NEW: Import GitHub callback handler
+import GitHubCallback from './components/GitHubCallback';
+
 function App() {
   return (
     <AuthProvider>
@@ -23,6 +26,9 @@ function App() {
 
           {/* Auth Test Route - for development/testing Internet Identity */}
           <Route path="/auth-test" element={<AuthTest />} />
+
+          {/* NEW: GitHub OAuth callback route - no auth required since it handles auth */}
+          <Route path="/auth/github/callback" element={<GitHubCallback />} />
 
           {/* ROUTE 2: LeaderboardPage PROTECTED and WRAPPED by MainLayout. */}
           <Route

@@ -1,4 +1,4 @@
-use crate::models::{Badge, BadgeCategory, BadgeTier, BadgeMetadata, BadgeAttribute, GitHubAnalysis};
+use crate::models::{Badge, GitHubAnalysis, BadgeCategory, BadgeTier, BadgeMetadata, BadgeAttribute};
 use ic_cdk::api::time;
 use std::collections::HashMap;
 
@@ -27,8 +27,12 @@ pub fn generate_badges_from_analysis(analysis: &GitHubAnalysis) -> Vec<Badge> {
 fn generate_language_badges(analysis: &GitHubAnalysis, current_time: u64) -> Vec<Badge> {
     let mut badges = Vec::new();
 
-    for (language, lines_of_code) in &analysis.languages {
-        let (tier, criteria_met, score) = determine_language_tier(*lines_of_code, &analysis.repositories, language);
+    // This would typically come from your GitHubAnalysis languages field
+    // For now, we'll estimate based on repository languages
+    let languages = extract_languages_from_repos(&analysis.repositories);
+
+    for (language, usage_score) in languages {
+        let (tier, criteria_met, score) = determine_language_tier(usage_score, &analysis.repositories, &language);
 
         if let Some(badge_tier) = tier {
             let badge_tier_clone = badge_tier.clone();
@@ -51,8 +55,8 @@ fn generate_language_badges(analysis: &GitHubAnalysis, current_time: u64) -> Vec
                             display_type: None,
                         },
                         BadgeAttribute {
-                            trait_type: "Lines of Code".to_string(),
-                            value: lines_of_code.to_string(),
+                            trait_type: "Usage Score".to_string(),
+                            value: usage_score.to_string(),
                             display_type: Some("number".to_string()),
                         },
                         BadgeAttribute {
@@ -165,19 +169,6 @@ fn generate_achievement_badges(analysis: &GitHubAnalysis, current_time: u64) -> 
         ));
     }
 
-    // Coding Streak badge
-    if let Some((tier, criteria, score)) = determine_streak_achievement(analysis.contributions_this_year) {
-        badges.push(create_achievement_badge(
-            "coding_streak",
-            "Coding Streak",
-            "Maintaining active coding contributions",
-            tier,
-            criteria,
-            score,
-            current_time,
-        ));
-    }
-
     badges
 }
 
@@ -200,9 +191,10 @@ fn generate_special_badges(analysis: &GitHubAnalysis, current_time: u64) -> Vec<
         });
     }
 
-    // Polyglot badge (uses many languages)
-    if analysis.languages.len() >= 5 {
-        let tier = match analysis.languages.len() {
+    // Extract languages for polyglot badge
+    let languages = extract_languages_from_repos(&analysis.repositories);
+    if languages.len() >= 5 {
+        let tier = match languages.len() {
             5..=7 => BadgeTier::Bronze3,
             8..=12 => BadgeTier::Silver2,
             _ => BadgeTier::Gold1,
@@ -211,13 +203,13 @@ fn generate_special_badges(analysis: &GitHubAnalysis, current_time: u64) -> Vec<
         badges.push(Badge {
             id: "polyglot".to_string(),
             name: "Polyglot".to_string(),
-            description: format!("Codes in {} different languages", analysis.languages.len()),
+            description: format!("Codes in {} different languages", languages.len()),
             category: BadgeCategory::Special("Polyglot".to_string()),
             tier,
             earned_at: current_time,
-            criteria_met: vec![format!("Uses {} programming languages", analysis.languages.len())],
-            score_achieved: analysis.languages.len() as u32,
-            metadata: create_special_badge_metadata("polyglot", analysis.languages.len() as u32),
+            criteria_met: vec![format!("Uses {} programming languages", languages.len())],
+            score_achieved: languages.len() as u32,
+            metadata: create_special_badge_metadata("polyglot", languages.len() as u32),
         });
     }
 
@@ -241,21 +233,21 @@ fn generate_special_badges(analysis: &GitHubAnalysis, current_time: u64) -> Vec<
 
 // Helper functions for tier determination
 
-fn determine_language_tier(lines_of_code: u32, repositories: &[crate::models::Repository], language: &str) -> (Option<BadgeTier>, Vec<String>, u32) {
+fn determine_language_tier(usage_score: u32, repositories: &[crate::models::Repository], language: &str) -> (Option<BadgeTier>, Vec<String>, u32) {
     let repos_with_language = repositories.iter()
         .filter(|r| r.language.as_deref() == Some(language))
         .count();
 
     let mut criteria = Vec::new();
-    let score = lines_of_code / 100; // Normalize score
+    let score = usage_score / 100; // Normalize score
 
-    let tier = match (lines_of_code, repos_with_language) {
+    let tier = match (usage_score, repos_with_language) {
         (1000..=5000, 1..=2) => {
-            criteria.push(format!("Written {}+ lines in {}", lines_of_code, language));
+            criteria.push(format!("Written {}+ lines in {}", usage_score, language));
             Some(BadgeTier::Bronze1)
         },
         (5001..=15000, 2..=5) => {
-            criteria.push(format!("Written {}+ lines across {} projects", lines_of_code, repos_with_language));
+            criteria.push(format!("Written {}+ lines across {} projects", usage_score, repos_with_language));
             Some(BadgeTier::Bronze2)
         },
         (15001..=50000, 3..=8) => {
@@ -362,24 +354,6 @@ fn determine_star_achievement(star_count: u32) -> Option<(BadgeTier, Vec<String>
 
     let criteria = vec![format!("{} - {} stars received", description, star_count)];
     Some((tier, criteria, star_count))
-}
-
-fn determine_streak_achievement(contributions: u32) -> Option<(BadgeTier, Vec<String>, u32)> {
-    let (tier, description) = match contributions {
-        50..=100 => (BadgeTier::Bronze1, "Building momentum"),
-        101..=200 => (BadgeTier::Bronze2, "Steady progress"),
-        201..=365 => (BadgeTier::Bronze3, "Daily contributor"),
-        366..=500 => (BadgeTier::Silver1, "Dedicated maintainer"),
-        501..=750 => (BadgeTier::Silver2, "Consistent champion"),
-        751..=1000 => (BadgeTier::Silver3, "Unstoppable force"),
-        1001..=1500 => (BadgeTier::Gold1, "Elite contributor"),
-        1501..=2000 => (BadgeTier::Gold2, "Legendary consistency"),
-        2001.. => (BadgeTier::Gold3, "Ultimate dedication"),
-        _ => return None,
-    };
-
-    let criteria = vec![format!("{} - {} contributions this year", description, contributions)];
-    Some((tier, criteria, contributions))
 }
 
 // Helper functions for badge creation
@@ -492,6 +466,20 @@ fn calculate_open_source_score(analysis: &GitHubAnalysis) -> u32 {
     let star_factor = analysis.total_stars_received;
 
     public_repos * 5 + fork_factor + star_factor
+}
+
+fn extract_languages_from_repos(repositories: &[crate::models::Repository]) -> HashMap<String, u32> {
+    let mut languages = HashMap::new();
+
+    for repo in repositories {
+        if let Some(lang) = &repo.language {
+            if !lang.is_empty() {
+                *languages.entry(lang.clone()).or_insert(0) += repo.size;
+            }
+        }
+    }
+
+    languages
 }
 
 pub fn calculate_reputation_score(badges: &[Badge]) -> u64 {
