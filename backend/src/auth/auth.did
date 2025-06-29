@@ -1,0 +1,45 @@
+type UserRole = variant {
+  User;
+  Admin;
+  Moderator;
+};
+
+type UserSession = record {
+  user_principal: principal;
+  github_username: opt text;
+  created_at: nat64;
+  last_active: nat64;
+  expires_at: nat64;
+  role: UserRole;
+  is_verified: bool;
+};
+
+type AuthError = variant {
+  NotAuthenticated;
+  SessionExpired;
+  InvalidPrincipal;
+  InternalError: text;
+};
+
+service : {
+  // ✅ NEW: Main Internet Identity endpoints
+  authenticate_user: () -> (variant { Ok: UserSession; Err: text });
+  renew_session: () -> (variant { Ok: UserSession; Err: text });
+  logout: () -> (variant { Ok: text; Err: text });
+
+  // ✅ UPDATED: Existing endpoints
+  create_test_session: () -> (variant { Ok: UserSession; Err: text });
+  create_session: (opt text) -> (variant { Ok: UserSession; Err: text });
+  update_last_active: () -> (variant { Ok; Err: text });
+  get_session: () -> (opt UserSession) query;
+  is_authenticated: () -> (bool) query;
+
+  // ✅ NEW: Cross-canister validation
+  validate_session: (principal) -> (variant { Ok: UserSession; Err: AuthError }) query;
+
+  // ✅ EXISTING: Admin functions
+  set_user_role: (principal, UserRole) -> (variant { Ok; Err: text });
+
+  // ✅ NEW: Monitoring
+  health_check: () -> (text) query;
+}

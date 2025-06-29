@@ -1,0 +1,43 @@
+type Attribute = record {
+  name: text;
+  value: text;
+};
+
+type TokenMetadata = record {
+  token_id: nat64;
+  name: text;
+  description: text;
+  image: text;
+  attributes: vec Attribute;
+  created_at: nat64;
+};
+
+type TransferArgs = record {
+  from: principal;
+  to: principal;
+  token_id: nat64;
+};
+
+service : {
+  // ICRC-7 Standard Functions (simplified metadata)
+  icrc7_collection_metadata: () -> (vec record { text; text }) query;
+  icrc7_total_supply: () -> (nat) query;
+  icrc7_supply_cap: () -> (opt nat) query;
+  icrc7_max_query_batch_size: () -> (opt nat) query;
+  icrc7_max_update_batch_size: () -> (opt nat) query;
+  icrc7_max_take_value: () -> (opt nat) query;
+  icrc7_default_take_value: () -> (opt nat) query;
+  icrc7_permitted_drift: () -> (opt nat) query;
+  icrc7_tx_window: () -> (opt nat) query;
+  icrc7_balance_of: (principal) -> (nat) query;
+  icrc7_owner_of: (vec nat) -> (vec opt principal) query;
+  icrc7_token_metadata: (vec nat) -> (vec opt vec record { text; text }) query;
+  icrc7_tokens_of: (principal, opt nat, opt nat) -> (vec nat) query;
+  icrc7_transfer: (vec TransferArgs) -> (vec opt text);
+
+  // Custom Functions
+  mint: (principal, text) -> (variant { Ok: nat64; Err: text });
+  get_user_badges: (principal) -> (vec TokenMetadata) query;
+  set_backend_canister: (principal) -> (variant { Ok; Err: text });
+  health_check: () -> (text) query;
+}

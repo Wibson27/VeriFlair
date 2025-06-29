@@ -1,9 +1,46 @@
 {
+  "version": 1,
   "canisters": {
-    "backend_backend": {
-      "candid": "src/backend_backend/backend_backend.did",
-      "package": "backend_backend",
-      "type": "rust"
+    "auth": {
+      "type": "rust",
+      "candid": "src/auth/auth.did",
+      "package": "auth",
+      "metadata": [
+        {
+          "name": "candid:service"
+        }
+      ]
+    },
+    "backend": {
+      "type": "rust",
+      "candid": "src/backend/backend.did",
+      "package": "backend",
+      "metadata": [
+        {
+          "name": "candid:service"
+        }
+      ]
+    },
+    "nft": {
+      "type": "rust",
+      "candid": "src/nft/nft.did",
+      "package": "nft",
+      "metadata": [
+        {
+          "name": "candid:service"
+        }
+      ]
+    },
+    "internet_identity": {
+      "type": "custom",
+      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
+      "wasm": "assets/internet_identity_dev.wasm.gz",
+      "init_arg": "(opt record { captcha_config = opt record { max_unsolved_captchas= 50:nat64; captcha_trigger = variant {Static = variant {CaptchaDisabled}}}})",
+      "remote": {
+        "id": {
+          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+        }
+      }
     }
   },
   "defaults": {
@@ -12,6 +49,15 @@
       "packtool": ""
     }
   },
-  "output_env_file": ".env",
-  "version": 1
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:4943",
+      "type": "ephemeral"
+    },
+    "ic": {
+      "providers": ["https://icp-api.io"],
+      "type": "persistent"
+    }
+  },
+  "output_env_file": ".env"
 }
