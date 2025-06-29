@@ -1,4 +1,4 @@
-// src/components/LeaderBoardPage/BadgeCard.jsx (FINAL DENGAN PERBAIKAN FRAME & TEKS BURAM)
+// BadgeCard with glitter
 
 import React from 'react';
 import Atropos from 'atropos/react';
@@ -10,9 +10,11 @@ const BadgeCard = ({
   rank, 
   points, 
   frameSrc, 
-  badgeSrc,   
+  badgeSrc, 
   rankBgSrc, 
   className = "",
+  glowClass = "",
+  sizeClass = "" // Tambahkan prop baru ini dengan nilai default
 }) => {
   
   return (
@@ -27,7 +29,7 @@ const BadgeCard = ({
         <img 
           src={frameSrc} 
           alt="Card Frame" 
-          className={`relative w-full h-full object-cover z-10 rounded-2xl`}
+          className={`relative w-full h-full object-cover z-10 rounded-2xl ${glowClass}`}
           data-atropos-offset="0" // Frame dibuat tidak bergerak dalam ruang 3D
         />
 

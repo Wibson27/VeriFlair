@@ -1,0 +1,59 @@
+// BadgeCard no glitter
+
+import React from 'react';
+import Atropos from 'atropos/react';
+import 'atropos/css';
+
+const BadgeCard = ({ 
+  id,
+  username, 
+  rank, 
+  points, 
+  frameSrc, 
+  badgeSrc, 
+  rankBgSrc, 
+  glowClass = "",
+  sizeClass = "w-44" // Prop untuk ukuran, dengan nilai default
+}) => {
+  
+  return (
+    // Atropos menerima ukuran dari props
+    <Atropos
+      className={`relative ${sizeClass} aspect-[3/4] rounded-2xl`}
+      activeOffset={40}
+      shadowScale={1.05}
+      shadow={false}
+    >
+      {/* Div ini boleh memiliki overflow-hidden, karena drop-shadow tidak akan terpotong */}
+      <div className="w-full h-full overflow-hidden rounded-2xl">
+        
+        {/* Efek glow diterapkan langsung pada gambar frame */}
+        <img 
+          src={frameSrc} 
+          alt="Card Frame" 
+          className={`relative w-full h-full object-cover z-10 ${glowClass}`}
+          data-atropos-offset="0"
+        />
+
+        {/* Sisa konten kartu */}
+        <div className="absolute inset-x-0 top-8 flex justify-center z-30" data-atropos-offset="2">
+          <img src={badgeSrc} alt="Skill Badge" className="w-2/3" />
+        </div>
+
+        <div className="absolute bottom-[3.5rem] w-full text-center z-30" data-atropos-offset="0">
+          <p className="text-white text-xl font-semibold">{username}</p>
+          <p className="text-gray-300 text-xl font-normal">{rank}</p>
+        </div>
+
+        <div className="absolute inset-x-0 bottom-[1rem] flex justify-center items-center z-30" data-atropos-offset="0">
+          <img src={rankBgSrc} alt="Rank Background" className="w-[4.5rem]" />
+          <div className="absolute text-xl text-black font-semibold">
+            {points}
+          </div>
+        </div>
+      </div>
+    </Atropos>
+  );
+};
+
+export default BadgeCard;
