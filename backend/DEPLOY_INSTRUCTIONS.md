@@ -27,13 +27,13 @@ chmod +x test-azure.sh
 
 ### ✅ Your Configured Services:
 - **GitHub OAuth**:
-  - Client ID: `Ov23lilX1z6LtvGmM8x3`
-  - Client Secret: `4e3613cadfa88427c1a09a6a715f125af2b20326`
+  - Client ID:
+  - Client Secret: 
 
 - **Azure OpenAI**:
-  - Endpoint: `https://rifqi-mbufwy7f-eastus2.openai.azure.com`
-  - API Key: `5MPwbn3V9D40xEzrCp6cP72jAtZxHk1kuYbXYJMSkdaA2mdRvGpBJQQJ99BFACHYHv6XJ3w3AAAAACOGBZeH`
-  - Deployment: `gpt-35-turbo`
+  - Endpoint: 
+  - API Key:
+  - Deployment: 
 
 ### ✅ Your Canisters:
 1. **Auth Canister**: User authentication & sessions
@@ -66,11 +66,9 @@ After running `./test-azure.sh`, you should see:
 ✅ All basic tests completed successfully!
 
 🤖 Azure OpenAI Integration Status:
-• ✅ Azure API Key: Configured
-• ✅ Azure Endpoint: https://rifqi-mbufwy7f-eastus2.openai.azure.com
-• ✅ GPT-3.5-turbo deployment ready
-• ✅ GitHub OAuth: Ov23lilX1z6LtvGmM8x3
-
+• ✅ Azure API Key:
+• ✅ Azure Endpoint: 
+• ✅ GitHub OAuth: 
 🔥 Ready for production use with AI-enhanced badges!
 ```
 
@@ -83,7 +81,7 @@ REACT_APP_AUTH_CANISTER_ID=your_auth_canister_id
 REACT_APP_BACKEND_CANISTER_ID=your_backend_canister_id
 REACT_APP_NFT_CANISTER_ID=your_nft_canister_id
 REACT_APP_DFX_NETWORK=local
-REACT_APP_GITHUB_CLIENT_ID=Ov23lilX1z6LtvGmM8x3
+REACT_APP_GITHUB_CLIENT_ID=
 ```
 
 ## 🏆 Badge System Features
